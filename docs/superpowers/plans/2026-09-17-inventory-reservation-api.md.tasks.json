@@ -1,0 +1,19 @@
+{
+  "planPath": "docs/superpowers/plans/2026-09-17-inventory-reservation-api.md",
+  "tasks": [
+    { "id": 0, "subject": "Task 1: Project Scaffolding & Tooling", "status": "pending" },
+    { "id": 1, "subject": "Task 2: Database Schema Migration & Local Test Postgres", "status": "pending", "blockedBy": [0] },
+    { "id": 2, "subject": "Task 3: DB Pool, Transaction Helper, Data Access", "status": "pending", "blockedBy": [1] },
+    { "id": 3, "subject": "Task 4: Errors, Validation Schemas, and Middleware", "status": "pending", "blockedBy": [0] },
+    { "id": 4, "subject": "Task 5: Items Service, Routes, and the Express App", "status": "pending", "blockedBy": [2, 3] },
+    { "id": 5, "subject": "Task 6: Reservation Creation (Concurrency-Safe)", "status": "pending", "blockedBy": [4] },
+    { "id": 6, "subject": "Task 7: Confirm & Cancel Reservations (Retry-Safe)", "status": "pending", "blockedBy": [5] },
+    { "id": 7, "subject": "Task 8: Expire-Reservations Maintenance Endpoint", "status": "pending", "blockedBy": [6] },
+    { "id": 8, "subject": "Task 9: OpenAPI Spec & Swagger UI", "status": "pending", "blockedBy": [7] },
+    { "id": 9, "subject": "Task 10: Local Dev Server Entry Point", "status": "pending", "blockedBy": [8] },
+    { "id": 10, "subject": "Task 11: Vercel Deployment Artifacts", "status": "pending", "blockedBy": [9] },
+    { "id": 11, "subject": "Task 12: Concurrency Demo Script", "status": "pending", "blockedBy": [7] },
+    { "id": 12, "subject": "Task 13: README", "status": "pending", "blockedBy": [10, 11] }
+  ],
+  "lastUpdated": "2026-09-17T00:00:00Z"
+}
