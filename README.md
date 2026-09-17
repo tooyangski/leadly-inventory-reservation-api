@@ -148,3 +148,6 @@ README with the URL Vercel prints.
   does not configure one.
 - `total_quantity` is fixed at item creation — restocking an existing
   item is not supported, since it wasn't part of the required behavior.
+- `npm audit` reports vulnerabilities in `vitest`/`vite`/`esbuild` — these
+  are transitive dev-only test-tooling dependencies and are never bundled
+  into the deployed API.

@@ -1,6 +1,7 @@
 import { Router } from 'express';
-import { validateBody } from '../middleware/validate';
+import { validateBody, validateParams } from '../middleware/validate';
 import { createReservationSchema } from '../validation/reservations';
+import { idParamSchema } from '../validation/items';
 import { createReservation, confirmReservation, cancelReservation } from '../services/reservations';
 
 export const reservationsRouter = Router();
@@ -15,7 +16,7 @@ reservationsRouter.post('/', validateBody(createReservationSchema), async (req, 
   }
 });
 
-reservationsRouter.post('/:id/confirm', async (req, res, next) => {
+reservationsRouter.post('/:id/confirm', validateParams(idParamSchema), async (req, res, next) => {
   try {
     const reservation = await confirmReservation(req.params.id);
     res.json(reservation);
@@ -24,7 +25,7 @@ reservationsRouter.post('/:id/confirm', async (req, res, next) => {
   }
 });
 
-reservationsRouter.post('/:id/cancel', async (req, res, next) => {
+reservationsRouter.post('/:id/cancel', validateParams(idParamSchema), async (req, res, next) => {
   try {
     const reservation = await cancelReservation(req.params.id);
     res.json(reservation);

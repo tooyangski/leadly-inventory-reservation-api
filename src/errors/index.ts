@@ -17,8 +17,10 @@ export class NotFoundError extends AppError {
   }
 }
 
+type ConflictCode = 'INSUFFICIENT_AVAILABILITY' | 'RESERVATION_EXPIRED' | 'INVALID_STATE';
+
 export class ConflictError extends AppError {
-  constructor(code: string, message: string) {
+  constructor(code: ConflictCode, message: string) {
     super(code, message);
   }
 }

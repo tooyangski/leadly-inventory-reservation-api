@@ -8,7 +8,7 @@ export interface ItemRow {
   id: string;
   name: string;
   total_quantity: number;
-  created_at: string;
+  created_at: Date;
 }
 
 export interface ReservationRow {
@@ -17,6 +17,6 @@ export interface ReservationRow {
   customer_id: string;
   quantity: number;
   status: ReservationStatus;
-  created_at: string;
-  expires_at: string;
+  created_at: Date;
+  expires_at: Date;
 }

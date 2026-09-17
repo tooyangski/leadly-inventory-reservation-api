@@ -6,3 +6,5 @@ export const createItemSchema = z.object({
 });
 
 export type CreateItemInput = z.infer<typeof createItemSchema>;
+
+export const idParamSchema = z.object({ id: z.string().uuid() });

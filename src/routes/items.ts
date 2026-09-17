@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { validateBody } from '../middleware/validate';
-import { createItemSchema } from '../validation/items';
+import { validateBody, validateParams } from '../middleware/validate';
+import { createItemSchema, idParamSchema } from '../validation/items';
 import { createItem, getItemStatus } from '../services/items';
 
 export const itemsRouter = Router();
@@ -15,7 +15,7 @@ itemsRouter.post('/', validateBody(createItemSchema), async (req, res, next) => 
   }
 });
 
-itemsRouter.get('/:id', async (req, res, next) => {
+itemsRouter.get('/:id', validateParams(idParamSchema), async (req, res, next) => {
   try {
     const status = await getItemStatus(req.params.id);
     res.json(status);

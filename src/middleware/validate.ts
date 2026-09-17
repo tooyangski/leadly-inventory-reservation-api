@@ -11,3 +11,12 @@ export const validateBody = (schema: ZodSchema): RequestHandler => (req, _res, n
   req.body = result.data;
   next();
 };
+
+export const validateParams = (schema: ZodSchema): RequestHandler => (req, _res, next) => {
+  const result = schema.safeParse(req.params);
+  if (!result.success) {
+    next(new ValidationError(result.error.issues.map((i) => i.message).join('; ')));
+    return;
+  }
+  next();
+};

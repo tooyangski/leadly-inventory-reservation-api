@@ -1,8 +1,13 @@
 import { pool } from '../db/pool';
 import { withTransaction } from '../db/withTransaction';
 import { lockItemById, getItemAggregates } from '../db/items';
-import { insertReservation } from '../db/reservations';
-import { confirmPendingReservation, cancelPendingReservation, findReservationById, expireStaleReservations } from '../db/reservations';
+import {
+  insertReservation,
+  confirmPendingReservation,
+  cancelPendingReservation,
+  findReservationById,
+  expireStaleReservations,
+} from '../db/reservations';
 import { NotFoundError, ConflictError } from '../errors';
 
 const RESERVATION_TTL_MINUTES = Number(process.env.RESERVATION_TTL_MINUTES ?? 10);
@@ -29,16 +34,30 @@ export async function createReservation(params: { itemId: string; customerId: st
 }
 
 export async function confirmReservation(id: string) {
-  const confirmed = await confirmPendingReservation(pool, id);
-  if (confirmed) return confirmed;
+  return withTransaction(async (client) => {
+    const reservation = await findReservationById(client, id);
+    if (!reservation) throw new NotFoundError(`Reservation ${id} not found`);
 
-  const existing = await findReservationById(pool, id);
-  if (!existing) throw new NotFoundError(`Reservation ${id} not found`);
-  if (existing.status === 'CONFIRMED') return existing;
-  if (existing.status === 'PENDING' && new Date(existing.expires_at).getTime() <= Date.now()) {
-    throw new ConflictError('RESERVATION_EXPIRED', `Reservation ${id} has expired and cannot be confirmed`);
-  }
-  throw new ConflictError('INVALID_STATE', `Reservation ${id} is ${existing.status} and cannot be confirmed`);
+    // Lock the item row so this confirm serializes against createReservation's
+    // aggregate read/lock on the same item — otherwise a confirm racing right at
+    // the expiry boundary could overlap with a concurrent create for the same
+    // freed-up stock.
+    await lockItemById(client, reservation.item_id);
+
+    const confirmed = await confirmPendingReservation(client, id);
+    if (confirmed) return confirmed;
+
+    const existing = await findReservationById(client, id);
+    if (!existing) throw new NotFoundError(`Reservation ${id} not found`);
+    if (existing.status === 'CONFIRMED') return existing;
+    if (existing.status === 'EXPIRED') {
+      throw new ConflictError('RESERVATION_EXPIRED', `Reservation ${id} has expired and cannot be confirmed`);
+    }
+    if (existing.status === 'PENDING' && new Date(existing.expires_at).getTime() <= Date.now()) {
+      throw new ConflictError('RESERVATION_EXPIRED', `Reservation ${id} has expired and cannot be confirmed`);
+    }
+    throw new ConflictError('INVALID_STATE', `Reservation ${id} is ${existing.status} and cannot be confirmed`);
+  });
 }
 
 export async function cancelReservation(id: string) {

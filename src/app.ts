@@ -17,6 +17,10 @@ export function createApp() {
   app.use('/v1/reservations', reservationsRouter);
   app.use('/v1/maintenance', maintenanceRouter);
 
+  app.use((_req, res) => {
+    res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Route not found' } });
+  });
+
   app.use(errorHandler);
   return app;
 }

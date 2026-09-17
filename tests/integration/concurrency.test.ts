@@ -29,4 +29,23 @@ describe('concurrent reservations', () => {
     expect(status.body.available_quantity).toBe(0);
     expect(status.body.held_quantity).toBe(5);
   });
+
+  it('never oversells when two concurrent multi-unit requests would together exceed stock', async () => {
+    const created = await request(app).post('/v1/items').send({ name: 'Limited Item', initial_quantity: 5 });
+    const itemId = created.body.id as string;
+
+    const attempts = [
+      request(app).post('/v1/reservations').send({ item_id: itemId, customer_id: 'customer-a', quantity: 3 }),
+      request(app).post('/v1/reservations').send({ item_id: itemId, customer_id: 'customer-b', quantity: 3 }),
+    ];
+    const results = await Promise.all(attempts);
+
+    const succeeded = results.filter((r) => r.status === 201);
+    const rejected = results.filter((r) => r.status === 409);
+    expect(succeeded).toHaveLength(1);
+    expect(rejected).toHaveLength(1);
+
+    const status = await request(app).get(`/v1/items/${itemId}`);
+    expect(status.body.available_quantity).toBe(2);
+  });
 });
