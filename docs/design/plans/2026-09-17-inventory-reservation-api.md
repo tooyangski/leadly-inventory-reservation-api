@@ -8,7 +8,7 @@
 
 **Tech Stack:** Express.js, TypeScript, raw `pg` (node-postgres, no ORM), zod, swagger-ui-express, Vitest + supertest, Docker Compose (local test Postgres), Vercel (deployment target), npm.
 
-**Spec:** `docs/superpowers/specs/2026-09-17-inventory-reservation-api-design.md`
+**Spec:** `docs/design/specs/2026-09-17-inventory-reservation-api-design.md`
 
 ## Global Constraints
 
@@ -1967,7 +1967,7 @@ every read directly from the `reservations` table, where `held` only
 counts `PENDING` reservations that haven't expired yet. This means
 cancelling or expiring a reservation is just a status change — there is
 nothing to keep in sync, and no way for a counter to drift from reality.
-See `docs/superpowers/specs/2026-09-17-inventory-reservation-api-design.md`
+See `docs/design/specs/2026-09-17-inventory-reservation-api-design.md`
 for the full design rationale.
 
 ## Tech stack
