@@ -1,8 +1,8 @@
 # Inventory Reservation API
 
-- **GitHub repo:** (this repository)
-- **Deployed URL:** TODO — fill in after running `vercel --prod` (see "Deploy to Vercel" below)
-- **Demo video:** TODO — add the video link here
+- **GitHub repo:** [(this repository)](https://github.com/tooyangski/leadly-inventory-reservation-api)
+- **Deployed URL:** [(Deployed on Vercel)](https://leadly-inventory-reservation-api.vercel.app)
+- **Demo video:** [(Demo Video)](https://drive.google.com/file/d/1s63uVGJ6hcmT9R3UtIzSbJB-cRcL-6tR/view?usp=sharing)
 
 ## Overview
 
@@ -65,6 +65,7 @@ tests/          Unit and integration tests
 
    Either way it's idempotent (`IF NOT EXISTS` throughout) — safe to run
    more than once, and requires no other manual setup.
+
 3. From your project's Settings → Database page, copy the **pooled
    ("Transaction pooler") connection string**, not the direct connection.
    It looks like:
@@ -83,11 +84,11 @@ tests/          Unit and integration tests
 
 Copy `.env.example` to `.env` and fill in the values:
 
-| Variable | Description |
-|---|---|
-| `DATABASE_URL` | Postgres connection string (Supabase, or local Docker Postgres for development) |
-| `PORT` | Port the local server listens on (default `3000`) |
-| `RESERVATION_TTL_MINUTES` | How long a new reservation stays valid before it can be expired (default `10`) |
+| Variable                  | Description                                                                     |
+| ------------------------- | ------------------------------------------------------------------------------- |
+| `DATABASE_URL`            | Postgres connection string (Supabase, or local Docker Postgres for development) |
+| `PORT`                    | Port the local server listens on (default `3000`)                               |
+| `RESERVATION_TTL_MINUTES` | How long a new reservation stays valid before it can be expired (default `10`)  |
 
 ## Running locally
 
