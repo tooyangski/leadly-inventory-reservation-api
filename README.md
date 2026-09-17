@@ -51,9 +51,19 @@ tests/          Unit and integration tests
 3. Paste the entire contents of `migrations/0001_init.sql` and run it. It
    is idempotent — safe to run more than once — and requires no other
    manual setup.
-4. From your project's Settings → Database page, copy the **connection
-   string** (use the pooled/"Transaction" connection string, port 6543,
-   for anything that will run on Vercel — see "Deploy to Vercel" below).
+4. From your project's Settings → Database page, copy the **pooled
+   ("Transaction pooler") connection string**, not the direct connection.
+   It looks like:
+   ```
+   postgresql://postgres.<project-ref>:<password>@aws-0-<region>.pooler.supabase.com:6543/postgres
+   ```
+   Use this for `DATABASE_URL` everywhere — locally and on Vercel — not
+   just in production. Supabase's **direct** connection host
+   (`db.<project-ref>.supabase.co`) only has an IPv6 address; on a
+   network/machine without IPv6 egress it fails with
+   `getaddrinfo ENOTFOUND`. The pooled host resolves over plain IPv4 and
+   works everywhere, which is also why it's required for Vercel's
+   serverless functions (see "Deploy to Vercel" below).
 
 ## Environment variables
 
@@ -116,6 +126,14 @@ npm run test:unit           # fast, no database required
 npm run db:up && npm run db:migrate
 npm run test:integration    # full endpoint lifecycle + the concurrency test, against real Postgres
 ```
+
+**Warning:** the integration suite `TRUNCATE`s the `items`/`reservations`
+tables between test cases. `DATABASE_URL` is shared by `npm run dev` and
+`npm run test:integration` — if you point it at your real Supabase project
+(e.g. while manually testing via Swagger/Bruno), do **not** run
+`npm run test:integration` until you switch `DATABASE_URL` back to the
+local Docker Postgres (`postgres://postgres:postgres@localhost:5432/inventory_reservation`),
+or you'll wipe your Supabase data.
 
 ## Reproducing the concurrency scenario
 
