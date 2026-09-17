@@ -2,7 +2,7 @@ import { pool } from '../db/pool';
 import { withTransaction } from '../db/withTransaction';
 import { lockItemById, getItemAggregates } from '../db/items';
 import { insertReservation } from '../db/reservations';
-import { confirmPendingReservation, cancelPendingReservation, findReservationById } from '../db/reservations';
+import { confirmPendingReservation, cancelPendingReservation, findReservationById, expireStaleReservations } from '../db/reservations';
 import { NotFoundError, ConflictError } from '../errors';
 
 const RESERVATION_TTL_MINUTES = Number(process.env.RESERVATION_TTL_MINUTES ?? 10);
@@ -49,4 +49,9 @@ export async function cancelReservation(id: string) {
   if (!existing) throw new NotFoundError(`Reservation ${id} not found`);
   if (existing.status === 'CANCELLED') return existing;
   throw new ConflictError('INVALID_STATE', `Reservation ${id} is ${existing.status} and cannot be cancelled`);
+}
+
+export async function expireReservations() {
+  const expired = await expireStaleReservations(pool);
+  return { expired_count: expired.length, expired_ids: expired.map((r) => r.id) };
 }
