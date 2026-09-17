@@ -1,7 +1,7 @@
 # Inventory Reservation API
 
 - **GitHub repo:** [(this repository)](https://github.com/tooyangski/leadly-inventory-reservation-api)
-- **Deployed URL:** [(Deployed on Vercel)](https://leadly-inventory-reservation-api.vercel.app)
+- **Deployed URL:** [(Deployed on Vercel)](https://leadly-inventory-reservation-api.vercel.app/docs)
 - **Demo video:** [(Demo Video)](https://drive.google.com/file/d/1s63uVGJ6hcmT9R3UtIzSbJB-cRcL-6tR/view?usp=sharing)
 
 ## Overview
