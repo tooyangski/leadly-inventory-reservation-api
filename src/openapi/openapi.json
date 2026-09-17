@@ -1,0 +1,175 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Inventory Reservation API",
+    "version": "1.0.0",
+    "description": "Create items, place temporary reservations against their stock, confirm or cancel those reservations, and expire stale ones — all without overselling under concurrent load."
+  },
+  "paths": {
+    "/v1/items": {
+      "post": {
+        "summary": "Create an item",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateItemRequest" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Item created",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Item" } } }
+          },
+          "400": { "description": "Validation error", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } }
+        }
+      }
+    },
+    "/v1/items/{id}": {
+      "get": {
+        "summary": "Get item status",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }],
+        "responses": {
+          "200": {
+            "description": "Item status",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ItemStatus" } } }
+          },
+          "404": { "description": "Item not found", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } }
+        }
+      }
+    },
+    "/v1/reservations": {
+      "post": {
+        "summary": "Create a reservation (temporary hold)",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateReservationRequest" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Reservation created",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Reservation" } } }
+          },
+          "409": { "description": "Insufficient availability", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } }
+        }
+      }
+    },
+    "/v1/reservations/{id}/confirm": {
+      "post": {
+        "summary": "Confirm a reservation",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }],
+        "responses": {
+          "200": {
+            "description": "Reservation confirmed",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Reservation" } } }
+          },
+          "409": { "description": "Reservation cannot be confirmed", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } }
+        }
+      }
+    },
+    "/v1/reservations/{id}/cancel": {
+      "post": {
+        "summary": "Cancel a reservation",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }],
+        "responses": {
+          "200": {
+            "description": "Reservation cancelled",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Reservation" } } }
+          },
+          "409": { "description": "Reservation cannot be cancelled", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } }
+        }
+      }
+    },
+    "/v1/maintenance/expire-reservations": {
+      "post": {
+        "summary": "Expire stale pending reservations",
+        "responses": {
+          "200": {
+            "description": "Expiration result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "expired_count": { "type": "integer" },
+                    "expired_ids": { "type": "array", "items": { "type": "string", "format": "uuid" } }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CreateItemRequest": {
+        "type": "object",
+        "required": ["name", "initial_quantity"],
+        "properties": {
+          "name": { "type": "string" },
+          "initial_quantity": { "type": "integer", "minimum": 1 }
+        }
+      },
+      "Item": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "name": { "type": "string" },
+          "total_quantity": { "type": "integer" },
+          "created_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "ItemStatus": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "name": { "type": "string" },
+          "total_quantity": { "type": "integer" },
+          "available_quantity": { "type": "integer" },
+          "held_quantity": { "type": "integer" },
+          "confirmed_quantity": { "type": "integer" }
+        }
+      },
+      "CreateReservationRequest": {
+        "type": "object",
+        "required": ["item_id", "customer_id", "quantity"],
+        "properties": {
+          "item_id": { "type": "string", "format": "uuid" },
+          "customer_id": { "type": "string" },
+          "quantity": { "type": "integer", "minimum": 1 }
+        }
+      },
+      "Reservation": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "item_id": { "type": "string", "format": "uuid" },
+          "customer_id": { "type": "string" },
+          "quantity": { "type": "integer" },
+          "status": { "type": "string", "enum": ["PENDING", "CONFIRMED", "CANCELLED", "EXPIRED"] },
+          "created_at": { "type": "string", "format": "date-time" },
+          "expires_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": { "type": "string" },
+              "message": { "type": "string" }
+            }
+          }
+        }
+      }
+    }
+  }
+}
