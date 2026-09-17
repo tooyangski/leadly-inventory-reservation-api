@@ -47,11 +47,25 @@ tests/          Unit and integration tests
 ## Setting up Supabase and running the migration
 
 1. Create a new project at [supabase.com](https://supabase.com).
-2. Open the SQL Editor in your Supabase project dashboard.
-3. Paste the entire contents of `migrations/0001_init.sql` and run it. It
-   is idempotent — safe to run more than once — and requires no other
-   manual setup.
-4. From your project's Settings → Database page, copy the **pooled
+2. Apply `migrations/0001_init.sql` using either method (both run the
+   identical SQL — pick whichever you prefer):
+   - **SQL Editor (no local setup needed):** open the SQL Editor in your
+     Supabase project dashboard, paste the entire contents of
+     `migrations/0001_init.sql`, and run it.
+   - **Command line (`npm run db:migrate`):** set `DATABASE_URL` in `.env`
+     to your Supabase connection string (see step 3 below for which one),
+     then run:
+     ```bash
+     npm run db:migrate
+     ```
+     This runs `scripts/migrate.ts`, which reads `migrations/0001_init.sql`
+     and executes it over a direct `pg` connection — useful if you'd
+     rather not leave the terminal, or want to re-apply it as part of a
+     script.
+
+   Either way it's idempotent (`IF NOT EXISTS` throughout) — safe to run
+   more than once, and requires no other manual setup.
+3. From your project's Settings → Database page, copy the **pooled
    ("Transaction pooler") connection string**, not the direct connection.
    It looks like:
    ```
