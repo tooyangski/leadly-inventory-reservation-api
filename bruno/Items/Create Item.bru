@@ -1,0 +1,28 @@
+meta {
+  name: Create Item
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/v1/items
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "White T-Shirt",
+    "initial_quantity": 5
+  }
+}
+
+script:post-response {
+  if (res.body && res.body.id) {
+    bru.setVar("itemId", res.body.id);
+  }
+}
+
+docs {
+  Creates an item and saves its id as the `itemId` variable, used by every other request in this collection. Change `initial_quantity` to try different stock levels.
+}

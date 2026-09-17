@@ -1,0 +1,29 @@
+meta {
+  name: Create Reservation
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/v1/reservations
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "item_id": "{{itemId}}",
+    "customer_id": "customer-1",
+    "quantity": 1
+  }
+}
+
+script:post-response {
+  if (res.body && res.body.id) {
+    bru.setVar("reservationId", res.body.id);
+  }
+}
+
+docs {
+  Places a temporary hold and saves its id as `reservationId`, used by Confirm/Cancel below. Requires `itemId` to already be set (run "Create Item" first). Run this multiple times against the same item to see 409 INSUFFICIENT_AVAILABILITY once stock runs out.
+}

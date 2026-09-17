@@ -1,0 +1,15 @@
+meta {
+  name: Expire Reservations
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/v1/maintenance/expire-reservations
+  body: none
+  auth: none
+}
+
+docs {
+  Marks any PENDING reservation whose expires_at has passed as EXPIRED and releases its quantity. The default reservation TTL is 10 minutes, so you won't see an effect immediately after creating a fresh reservation unless you lower RESERVATION_TTL_MINUTES in .env first (e.g. to 1) and wait, or manually update expires_at in the database for a quick demo.
+}

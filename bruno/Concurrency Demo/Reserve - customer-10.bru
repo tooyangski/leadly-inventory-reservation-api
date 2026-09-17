@@ -1,0 +1,19 @@
+meta {
+  name: Reserve - customer-10
+  type: http
+  seq: 10
+}
+
+post {
+  url: {{baseUrl}}/v1/reservations
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "item_id": "{{itemId}}",
+    "customer_id": "customer-10",
+    "quantity": 1
+  }
+}

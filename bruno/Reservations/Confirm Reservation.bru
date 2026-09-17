@@ -1,0 +1,15 @@
+meta {
+  name: Confirm Reservation
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/v1/reservations/{{reservationId}}/confirm
+  body: none
+  auth: none
+}
+
+docs {
+  Permanently confirms the reservation created above. Safe to click twice — the second call returns 200 with the same state rather than erroring.
+}

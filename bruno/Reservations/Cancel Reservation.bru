@@ -1,0 +1,15 @@
+meta {
+  name: Cancel Reservation
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/v1/reservations/{{reservationId}}/cancel
+  body: none
+  auth: none
+}
+
+docs {
+  Releases the held quantity back to availability. Safe to click twice (idempotent). Returns 409 if the reservation was already confirmed.
+}

@@ -1,0 +1,15 @@
+meta {
+  name: Get Item Status
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/v1/items/{{itemId}}
+  body: none
+  auth: none
+}
+
+docs {
+  Shows total_quantity, available_quantity, held_quantity, and confirmed_quantity for the item created by "Create Item". Run this after each reservation action to watch the numbers change.
+}

@@ -1,0 +1,14 @@
+meta {
+  name: Concurrency Demo
+}
+
+docs {
+  These 10 requests all reserve 1 unit of the SAME item ({{itemId}}) under different customer ids. Run "Items > Create Item" with initial_quantity: 5 first, then click through these as fast as you can — the first 5 should succeed (201) and the rest should fail (409 INSUFFICIENT_AVAILABILITY).
+
+  Important: Bruno sends requests one at a time when you click "Send" — this is a visual demo of stock depleting, NOT a rigorous proof of concurrency safety (clicking isn't truly simultaneous, so it can't reveal a race condition even if one existed). For the real concurrency proof:
+
+  - `npm run demo:concurrency` — fires 10 genuinely parallel HTTP requests against a running server and prints the result
+  - `npm run test:integration` — includes an automated test that does the same thing via Promise.all and asserts the exact 5-succeed/5-reject split
+
+  Use those two for the actual "correctness under concurrency" evidence; use this folder for a quick visual walkthrough in the demo video.
+}

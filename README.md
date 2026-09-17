@@ -88,6 +88,27 @@ npm run dev
 Once running, visit `http://localhost:3000/docs` for interactive Swagger
 UI, or fetch the raw spec from `http://localhost:3000/openapi.json`.
 
+## Manual testing with Bruno
+
+A ready-to-use [Bruno](https://www.usebruno.com/) collection is included at
+`bruno/`. Open that folder directly in the Bruno app, select the `local`
+environment, and run requests in order:
+
+1. **Items → Create Item** — creates an item and auto-saves its id as the
+   `itemId` variable for every other request.
+2. **Items → Get Item Status** — check availability at any point.
+3. **Reservations → Create/Confirm/Cancel Reservation** — chained via an
+   auto-saved `reservationId` variable.
+4. **Maintenance → Expire Reservations**.
+5. **Concurrency Demo** folder — 10 pre-built "reserve 1 unit" requests
+   against the same item, for a quick visual demo of stock depleting and
+   409s appearing. Note: clicking through these is NOT a rigorous
+   concurrency proof (Bruno sends one request at a time) — see the next
+   section for that.
+
+A `production` environment is also included with a placeholder `baseUrl`
+to swap in once deployed.
+
 ## Running tests
 
 ```bash
