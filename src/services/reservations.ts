@@ -2,6 +2,7 @@ import { pool } from '../db/pool';
 import { withTransaction } from '../db/withTransaction';
 import { lockItemById, getItemAggregates } from '../db/items';
 import { insertReservation } from '../db/reservations';
+import { confirmPendingReservation, cancelPendingReservation, findReservationById } from '../db/reservations';
 import { NotFoundError, ConflictError } from '../errors';
 
 const RESERVATION_TTL_MINUTES = Number(process.env.RESERVATION_TTL_MINUTES ?? 10);
@@ -27,6 +28,25 @@ export async function createReservation(params: { itemId: string; customerId: st
   });
 }
 
-// Note: `pool` is imported here so later steps in this task (confirm/cancel, added in Task 7)
-// can share the module — it is unused by `createReservation` itself, which always runs inside
-// `withTransaction`. Leave the import in place; Task 7 will use it.
+export async function confirmReservation(id: string) {
+  const confirmed = await confirmPendingReservation(pool, id);
+  if (confirmed) return confirmed;
+
+  const existing = await findReservationById(pool, id);
+  if (!existing) throw new NotFoundError(`Reservation ${id} not found`);
+  if (existing.status === 'CONFIRMED') return existing;
+  if (existing.status === 'PENDING' && new Date(existing.expires_at).getTime() <= Date.now()) {
+    throw new ConflictError('RESERVATION_EXPIRED', `Reservation ${id} has expired and cannot be confirmed`);
+  }
+  throw new ConflictError('INVALID_STATE', `Reservation ${id} is ${existing.status} and cannot be confirmed`);
+}
+
+export async function cancelReservation(id: string) {
+  const cancelled = await cancelPendingReservation(pool, id);
+  if (cancelled) return cancelled;
+
+  const existing = await findReservationById(pool, id);
+  if (!existing) throw new NotFoundError(`Reservation ${id} not found`);
+  if (existing.status === 'CANCELLED') return existing;
+  throw new ConflictError('INVALID_STATE', `Reservation ${id} is ${existing.status} and cannot be cancelled`);
+}
